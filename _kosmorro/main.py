@@ -45,7 +45,11 @@ def main():
     try:
         compute_date = parse_date(args.date)
     except ValueError as error:
-        print(colored(error.args[0], color="red", attrs=["bold"]))
+        print(
+            colored(error.args[0], color="red", attrs=["bold"])
+            if args.colors
+            else error.args[0]
+        )
         return -1
 
     position = None
@@ -214,9 +218,8 @@ def get_args(output_formats: [str]):
             "Compute the ephemerides and the events for a given date and a given position on Earth."
         ),
         epilog=_(
-            "By default, only the events will be computed for today ({date}).\n"
-            "To compute also the ephemerides, latitude and longitude arguments"
-            " are needed."
+            "By default, only the events will be computed for today.\n"
+            "To compute also the ephemerides, latitude and longitude arguments are needed."
         ).format(date=today.strftime(dumper.FULL_DATE_FORMAT)),
     )
 
@@ -265,7 +268,7 @@ def get_args(output_formats: [str]):
         help=_(
             "The date for which the ephemerides must be calculated. Can be in the YYYY-MM-DD format "
             'or an interval in the "[+-]YyMmDd" format (with Y, M, and D numbers). '
-            "Defaults to today ({default_date})."
+            "Defaults to current date."
         ).format(default_date=today.strftime("%Y-%m-%d")),
     )
     parser.add_argument(

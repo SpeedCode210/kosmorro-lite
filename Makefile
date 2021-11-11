@@ -1,5 +1,9 @@
 black:
-	pipenv run black kosmorro _kosmorro setup.py
+	pipenv run black kosmorro _kosmorro tests setup.py
+
+.PHONY: tests
+tests:
+	pipenv run python3 -m pytest tests/*.py
 
 .PHONY: build
 build: manpage
