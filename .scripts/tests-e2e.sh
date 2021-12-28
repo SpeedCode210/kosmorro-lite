@@ -1,11 +1,8 @@
 #!/bin/bash
 
-VERSION=$(grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' _kosmorro/__version__.py)
-PYTHON_BIN=$(command -v python)
 PIP_BIN=$(command -v pip)
 
 if python3 --version > /dev/null; then
-    PYTHON_BIN=$(command -v python3)
     PIP_BIN=$(command -v pip3)
 fi
 
@@ -76,7 +73,7 @@ echo
 
 # Create the package and install it
 assertSuccess "make build"
-assertSuccess "$PIP_BIN install dist/kosmorro-$VERSION.tar.gz" "CI"
+assertSuccess "$PIP_BIN install dist/kosmorro-*-py3-none-any.whl" "CI"
 
 KOSMORRO_COMMAND="kosmorro --debug"
 

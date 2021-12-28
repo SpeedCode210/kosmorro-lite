@@ -1,9 +1,9 @@
 black:
-	pipenv run black kosmorro _kosmorro setup.py
+	poetry run black kosmorro
 
 .PHONY: build
 build: manpage
-	python3 setup.py sdist bdist_wheel
+	poetry build
 
 .PHONY: manpage
 manpage:
@@ -11,10 +11,10 @@ manpage:
 	ronn --roff manpage/kosmorro.7.md
 
 messages:
-	pipenv run pybabel extract --output=_kosmorro/locales/messages.pot _kosmorro
+	poetry run pybabel extract --output=kosmorro/locales/messages.pot kosmorro
 
 i18n:
-	pipenv run pybabel compile --directory=_kosmorro/locales
+	poetry run pybabel compile --directory=kosmorro/locales
 
 changelog:
 	conventional-changelog -p angular -i CHANGELOG.md -s

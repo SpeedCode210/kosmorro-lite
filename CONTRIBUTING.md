@@ -62,8 +62,6 @@ Once you have done your work, please remember to tell [Babel](http://babel.pocoo
 $ make messages
 ```
 
-> If the `setup.py` script tells you that the `extract_messages` command does not exist, then run `pipenv sync` to ensure all the dev dependencies are installed and try again.
-
 Note that if you forget to update the messages file, the CI will fail.
 
 ### Matching the coding standards

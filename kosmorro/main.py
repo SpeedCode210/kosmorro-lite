@@ -29,7 +29,7 @@ from . import dumper, environment, debug
 from .date import parse_date
 from .__version__ import __version__ as kosmorro_version
 from .exceptions import UnavailableFeatureError, OutOfRangeDateError as DateRangeError
-from _kosmorro.i18n.utils import _, SHORT_DATE_FORMAT
+from kosmorro.i18n.utils import _, SHORT_DATE_FORMAT
 
 
 def main():
@@ -310,3 +310,10 @@ def get_args(output_formats: [str]):
     )
 
     return parser.parse_args()
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:
+        sys.exit(1)
