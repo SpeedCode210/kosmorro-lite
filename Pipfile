@@ -8,8 +8,6 @@ babel = "*"
 black = "*"
 
 [packages]
-tabulate = "*"
-termcolor = "*"
 kosmorrolib = ">=1.0.0,<2.0.0"
 python-dateutil = "*"
 

@@ -25,10 +25,10 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 setup(
-    name="kosmorro",
+    name="kosmorro-lite",
     version=__version__,
-    author="Jérôme Deuchnord",
-    author_email="jerome@deuchnord.fr",
+    author="Raouf OULD ALI",
+    author_email="raouf@eclipium.xyz",
     url="http://kosmorro.space",
     license="AGPL-3.0",
     description="A program that computes the ephemerides.",
@@ -36,16 +36,14 @@ setup(
     long_description_content_type="text/markdown",
     keywords="kosmorro astronomy ephemerides ephemeris",
     packages=find_packages(),
-    scripts=["kosmorro"],
+    scripts=["kosmorro-lite"],
     include_package_data=True,
     data_files=[
-        ("man/man1", ["manpage/kosmorro.1"]),
-        ("man/man7", ["manpage/kosmorro.7"]),
+        ("man/man1", ["manpage/kosmorro-lite.1"]),
+        ("man/man7", ["manpage/kosmorro-lite.7"]),
     ],
     install_requires=[
         "kosmorrolib",
-        "tabulate",
-        "termcolor",
         "python-dateutil",
     ],
     classifiers=[

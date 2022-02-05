@@ -23,7 +23,6 @@ from kosmorrolib import Position, get_ephemerides, get_events, get_moon_phase
 from kosmorrolib.__version__ import __version__ as kosmorrolib_version
 from kosmorrolib.exceptions import OutOfRangeDateError
 from datetime import date
-from termcolor import colored
 
 from . import dumper, environment, debug
 from .date import parse_date
@@ -34,10 +33,8 @@ from _kosmorro.i18n.utils import _, SHORT_DATE_FORMAT
 
 def main():
     env_vars = environment.get_env_vars()
-    output_formats = get_dumpers()
-    args = get_args(list(output_formats.keys()))
+    args = get_args()
     debug.show_debug_messages = args.show_debug_messages
-    output_format = args.format
 
     if args.special_action is not None:
         return 0 if args.special_action() else 1
@@ -45,7 +42,7 @@ def main():
     try:
         compute_date = parse_date(args.date)
     except ValueError as error:
-        print(colored(error.args[0], color="red", attrs=["bold"]))
+        print(error.args[0])
         return -1
 
     position = None
@@ -54,25 +51,6 @@ def main():
         position = Position(args.latitude, args.longitude)
     elif env_vars.latitude is not None and env_vars.longitude is not None:
         position = Position(float(env_vars.latitude), float(env_vars.longitude))
-
-    if output_format == "pdf":
-        print(
-            _(
-                "Save the planet and paper!\n"
-                "Consider printing your PDF document only if really necessary, and use the other side of the sheet."
-            )
-        )
-        if position is None:
-            print()
-            print(
-                colored(
-                    _(
-                        "PDF output will not contain the ephemerides, because you didn't provide the observation "
-                        "coordinates."
-                    ),
-                    "yellow",
-                )
-            )
 
     timezone = args.timezone
 
@@ -86,50 +64,17 @@ def main():
             compute_date,
             position,
             timezone,
-            output_format,
-            args.colors,
-            args.show_graph,
         )
     except UnavailableFeatureError as error:
-        print(colored(error.msg, "red"))
+        print(error.msg)
         debug.debug_print(error)
         return 2
     except DateRangeError as error:
-        print(colored(error.msg, "red"))
+        print(error.msg)
         debug.debug_print(error)
         return 1
 
-    if args.output is not None:
-        try:
-            pdf_content = output.to_string()
-            with open(args.output, "wb") as output_file:
-                output_file.write(pdf_content)
-        except UnavailableFeatureError as error:
-            print(colored(error.msg, "red"))
-            debug.debug_print(error)
-            return 2
-        except OSError as error:
-            print(
-                colored(
-                    _('The file could not be saved in "{path}": {error}').format(
-                        path=args.output, error=error.strerror
-                    ),
-                    "red",
-                )
-            )
-            debug.debug_print(error)
-
-            return 3
-    elif not output.is_file_output_needed():
-        print(output)
-    else:
-        print(
-            colored(
-                _("Please provide a file path to export in this format (--output)."),
-                color="red",
-            )
-        )
-        return 1
+    print(output)
 
     return 0
 
@@ -138,9 +83,6 @@ def get_information(
     compute_date: date,
     position: Position,
     timezone: int,
-    output_format: str,
-    colors: bool,
-    show_graph: bool,
 ) -> dumper.Dumper:
     if position is not None:
         try:
@@ -156,37 +98,16 @@ def get_information(
         moon_phase = get_moon_phase(for_date=compute_date, timezone=timezone)
     except OutOfRangeDateError as error:
         moon_phase = None
-        print(
-            colored(
-                _(
-                    "Moon phase can only be displayed between {min_date} and {max_date}"
-                ).format(
-                    min_date=error.min_date.strftime(SHORT_DATE_FORMAT),
-                    max_date=error.max_date.strftime(SHORT_DATE_FORMAT),
-                ),
-                "yellow",
-            )
-        )
 
     events_list = get_events(compute_date, timezone)
 
-    return get_dumpers()[output_format](
+    return dumper.JsonDumper(
         ephemerides=eph,
         moon_phase=moon_phase,
         events=events_list,
         date=compute_date,
         timezone=timezone,
-        with_colors=colors,
-        show_graph=show_graph,
     )
-
-
-def get_dumpers() -> {str: dumper.Dumper}:
-    return {
-        "text": dumper.TextDumper,
-        "json": dumper.JsonDumper,
-        "pdf": dumper.PdfDumper,
-    }
 
 
 def output_version() -> bool:
@@ -206,7 +127,7 @@ def output_version() -> bool:
     return True
 
 
-def get_args(output_formats: [str]):
+def get_args():
     today = date.today()
 
     parser = argparse.ArgumentParser(
@@ -228,14 +149,6 @@ def get_args(output_formats: [str]):
         const=output_version,
         default=None,
         help=_("Show the program version"),
-    )
-    parser.add_argument(
-        "--format",
-        "-f",
-        type=str,
-        default=output_formats[0],
-        choices=output_formats,
-        help=_("The format to output the information to"),
     )
     parser.add_argument(
         "--latitude",
@@ -279,34 +192,11 @@ def get_args(output_formats: [str]):
         ),
     )
     parser.add_argument(
-        "--no-colors",
-        dest="colors",
-        action="store_false",
-        help=_("Disable the colors in the console."),
-    )
-    parser.add_argument(
-        "--output",
-        "-o",
-        type=str,
-        default=None,
-        help=_(
-            "A file to export the output to. If not given, the standard output is used. "
-            "This argument is needed for PDF format."
-        ),
-    )
-    parser.add_argument(
-        "--no-graph",
-        dest="show_graph",
-        action="store_false",
-        help=_(
-            "Do not generate a graph to represent the rise and set times in the PDF format."
-        ),
-    )
-    parser.add_argument(
         "--debug",
         dest="show_debug_messages",
         action="store_true",
         help=_("Show debugging messages"),
     )
+
 
     return parser.parse_args()

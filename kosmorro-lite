@@ -19,6 +19,24 @@
 import sys
 from _kosmorro.main import main
 
+try:
+    import kosmorrolib
+except ImportError:
+    print('module kosmorrolib not installed')
+    sys.exit(1)
+except Exception as e:
+    print(type(e).__name__)
+    sys.exit(1)
+
+try:
+    import dateutil
+except ImportError:
+    print('module python-dateutil not installed')
+    sys.exit(1)
+except Exception as e:
+    print(type(e).__name__)
+    sys.exit(1)
+
 if __name__ == "__main__":
     try:
         sys.exit(main())
