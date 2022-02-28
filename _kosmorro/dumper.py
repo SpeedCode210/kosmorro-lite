@@ -123,7 +123,7 @@ class JsonDumper(Dumper):
 
             if event.event_type == EventType.SEASON_CHANGE:
                 yield serialize_season_change(event)
-            if event.event_type == EventType.LUNAR_ECLIPSE:
+            elif event.event_type == EventType.LUNAR_ECLIPSE:
                 yield serialize_lunar_eclipse(event)
             else:
                 yield event.serialize()
