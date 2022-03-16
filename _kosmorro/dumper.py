@@ -62,12 +62,14 @@ class Dumper(ABC):
     def __init__(
         self,
         ephemerides: [AsterEphemerides],
+        coordinates: dict,
         moon_phase: MoonPhase,
         events: [Event],
         date: datetime.date,
         timezone: int,
     ):
         self.ephemerides = ephemerides
+        self.coordinates = coordinates
         self.moon_phase = moon_phase
         self.events = events
         self.date = date
@@ -113,6 +115,7 @@ class JsonDumper(Dumper):
                 ],
                 "moon_phase": self.moon_phase.serialize(),
                 "events": list(self.get_events()),
+                "coordinates": self.coordinates,
             }
         )
 
