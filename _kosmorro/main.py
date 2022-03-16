@@ -111,7 +111,7 @@ def get_information(
     events_list = get_events(compute_date, timezone)
 
     # Coordonnées equatoriales des astres
-    load = Loader(get_skyfield_data_path())
+    load = Loader(get_skyfield_data_path(),verbose=False)
     ts = load.timescale()
     t = ts.tt(compute_date.year, compute_date.month, compute_date.day, 12, 0)
     planets = load('de421.bsp')
