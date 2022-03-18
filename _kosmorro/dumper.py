@@ -108,12 +108,17 @@ class JsonDumper(Dumper):
     ]
 
     def to_string(self):
+
+        if self.moon_phase is not None:
+            self.moon_phase = self.moon_phase.serialize()
+
+
         return json.dumps(
             {
                 "ephemerides": [
                     ephemeris.serialize() for ephemeris in self.ephemerides
                 ],
-                "moon_phase": self.moon_phase.serialize(),
+                "moon_phase": self.moon_phase,
                 "events": list(self.get_events()),
                 "coordinates": self.coordinates,
             }
